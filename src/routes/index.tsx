@@ -324,7 +324,7 @@ function Index() {
                       tickFormatter={(v) => `${Math.round(v / 1000)} k€`}
                     />
                     <Tooltip
-                      formatter={(v: number) => fmtEUR(v)}
+                      formatter={(v: any) => fmtEUR(Number(v))}
                       labelFormatter={(l) => `Année ${l}`}
                       contentStyle={{
                         background: "hsl(var(--card))",
