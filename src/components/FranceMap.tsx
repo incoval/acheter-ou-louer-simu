@@ -5,165 +5,74 @@ interface Props {
   onSelect: (name: string) => void;
 }
 
-// Realistic outline of metropolitan France + Corsica.
-// Source: simplified from Natural Earth admin-0 (France metropolitan).
-// viewBox sized so that lon/lat can be projected linearly:
-//   x = (lon - (-5)) * (500 / 15)   → lon ∈ [-5, 10]
-//   y = (51 - lat) * (500 / 10)     → lat ∈ [41, 51]
-// Resulting viewBox: 0 0 500 500
-const FRANCE_PATH = `
-M 100 145
-L 115 135
-L 130 142
-L 145 138
-L 158 150
-L 172 145
-L 188 158
-L 200 150
-L 215 140
-L 228 132
-L 240 120
-L 255 110
-L 268 95
-L 282 85
-L 295 78
-L 310 72
-L 325 68
-L 338 62
-L 352 70
-L 360 82
-L 372 78
-L 385 88
-L 395 100
-L 408 95
-L 420 105
-L 432 118
-L 445 130
-L 452 145
-L 448 160
-L 440 172
-L 432 185
-L 438 198
-L 445 210
-L 442 225
-L 435 238
-L 428 250
-L 432 265
-L 440 278
-L 445 292
-L 442 308
-L 435 322
-L 428 335
-L 422 348
-L 415 360
-L 408 372
-L 412 385
-L 408 398
-L 395 408
-L 380 412
-L 365 408
-L 350 412
-L 338 408
-L 322 412
-L 308 415
-L 292 418
-L 278 420
-L 262 415
-L 248 410
-L 232 405
-L 218 395
-L 205 385
-L 195 372
-L 185 360
-L 178 348
-L 172 335
-L 168 322
-L 165 308
-L 162 295
-L 158 282
-L 152 268
-L 148 255
-L 145 242
-L 142 228
-L 138 215
-L 135 202
-L 130 188
-L 122 178
-L 115 168
-L 108 158
-Z
-M 460 380
-L 472 372
-L 480 380
-L 485 395
-L 488 410
-L 485 425
-L 478 438
-L 470 442
-L 462 435
-L 458 420
-L 455 405
-L 458 390
-Z
-`;
+const MAINLAND_PATH =
+  "M 10 39 L 13 35 L 20 31 L 26 28 L 29 34 L 34 31 L 37 24 L 44 20 L 51 20 L 56 23 L 61 22 L 66 25 L 71 24 L 76 27 L 80 26 L 85 30 L 90 36 L 94 44 L 97 50 L 95 54 L 97 58 L 95 62 L 97 66 L 93 69 L 91 74 L 89 79 L 87 84 L 84 88 L 79 91 L 73 93 L 67 92 L 61 94 L 57 92 L 53 94 L 49 92 L 45 94 L 40 91 L 35 88 L 30 85 L 25 80 L 20 75 L 17 69 L 14 62 L 12 57 L 14 51 L 12 46 Z";
 
-// Helper: convert lon/lat to viewBox coords
-const project = (lon: number, lat: number) => ({
-  x: (lon - -5) * (500 / 15),
-  y: (51 - lat) * (500 / 10),
-});
+const CORSICA_PATH =
+  "M 95 88 L 97 86 L 99 87 L 100 91 L 100 95 L 99 98 L 97 100 L 95 99 L 94 96 L 94 92 Z";
 
-const CITY_COORDS: Record<string, { lon: number; lat: number }> = {
-  Paris:       { lon: 2.35,  lat: 48.85 },
-  Lyon:        { lon: 4.83,  lat: 45.75 },
-  Marseille:   { lon: 5.37,  lat: 43.30 },
-  Toulouse:    { lon: 1.44,  lat: 43.60 },
-  Bordeaux:    { lon: -0.58, lat: 44.84 },
-  Nantes:      { lon: -1.55, lat: 47.22 },
-  Nice:        { lon: 7.27,  lat: 43.70 },
-  Strasbourg:  { lon: 7.75,  lat: 48.58 },
-  Rennes:      { lon: -1.68, lat: 48.11 },
-  Montpellier: { lon: 3.88,  lat: 43.61 },
+const CITY_POSITIONS: Record<string, { x: number; y: number; labelX?: number; labelY?: number; anchor?: "start" | "end" }> = {
+  Paris: { x: 49, y: 38 },
+  Rennes: { x: 24, y: 49 },
+  Nantes: { x: 24, y: 57 },
+  Strasbourg: { x: 92, y: 46, labelX: 90, labelY: 46, anchor: "start" },
+  Lyon: { x: 68, y: 66 },
+  Bordeaux: { x: 31, y: 76 },
+  Toulouse: { x: 43, y: 89 },
+  Montpellier: { x: 61, y: 88 },
+  Marseille: { x: 72, y: 92 },
+  Nice: { x: 81, y: 89 },
 };
 
 export function FranceMap({ selected, onSelect }: Props) {
   return (
-    <svg viewBox="0 0 500 500" className="w-full h-auto">
+    <svg viewBox="0 0 104 104" className="h-auto w-full overflow-visible">
       <path
-        d={FRANCE_PATH}
-        className="fill-muted/40 stroke-border"
-        strokeWidth="2"
+        d={MAINLAND_PATH}
+        className="fill-muted/20 stroke-border"
+        strokeWidth="0.6"
         strokeLinejoin="round"
-        fillRule="evenodd"
+        strokeLinecap="round"
       />
-      {CITIES.map((c) => {
-        const coords = CITY_COORDS[c.name];
-        const { x, y } = project(coords.lon, coords.lat);
-        const isSel = c.name === selected;
+      <path
+        d={CORSICA_PATH}
+        className="fill-muted/20 stroke-border"
+        strokeWidth="0.6"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+
+      {CITIES.map((city) => {
+        const point = CITY_POSITIONS[city.name];
+        const isSelected = city.name === selected;
+        const labelX = point.labelX ?? point.x + 3;
+        const labelY = point.labelY ?? point.y + 1;
+
         return (
           <g
-            key={c.name}
-            onClick={() => onSelect(c.name)}
+            key={city.name}
+            onClick={() => onSelect(city.name)}
             className="cursor-pointer"
           >
             <circle
-              cx={x}
-              cy={y}
-              r={isSel ? 10 : 7}
+              cx={point.x}
+              cy={point.y}
+              r={isSelected ? 2.4 : 1.6}
               className={
-                isSel
+                isSelected
                   ? "fill-primary stroke-primary-foreground"
-                  : "fill-primary/60 hover:fill-primary stroke-background"
+                  : "fill-primary/60 stroke-background transition-colors hover:fill-primary"
               }
-              strokeWidth="2"
+              strokeWidth="0.5"
             />
             <text
-              x={x + 12}
-              y={y + 4}
-              fontSize="13"
-              className={isSel ? "fill-foreground font-semibold" : "fill-muted-foreground"}
+              x={labelX}
+              y={labelY}
+              fontSize="3.1"
+              textAnchor={point.anchor ?? "start"}
+              className={isSelected ? "fill-foreground font-semibold" : "fill-muted-foreground"}
             >
-              {c.name}
+              {city.name}
             </text>
           </g>
         );
