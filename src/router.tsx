@@ -56,7 +56,7 @@ function DefaultErrorComponent({ error, reset }: { error: Error; reset: () => vo
 
 export const getRouter = () => {
   const router = createRouter({
-    basename: "/",
+    basepath: "/",
     routeTree,
     context: {},
     scrollRestoration: true,
