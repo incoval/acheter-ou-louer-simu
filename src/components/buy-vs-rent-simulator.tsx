@@ -281,7 +281,7 @@ export function BuyVsRentSimulator() {
                     />
                     <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `${Math.round(v / 1000)} k€`} />
                     <Tooltip
-                      formatter={(v: number | string) => fmtEUR(Number(v))}
+                      formatter={(v) => (v == null ? "" : fmtEUR(Number(v)))}
                       labelFormatter={(l) => `Année ${l}`}
                       contentStyle={{
                         background: "hsl(var(--card))",
