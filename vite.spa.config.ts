@@ -3,11 +3,9 @@ import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
 import tailwindcss from "@tailwindcss/vite";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
-
-const base = process.env.VITE_BASE_PATH || "/";
+import { resolve } from "node:path";
 
 export default defineConfig({
-  base,
   plugins: [
     tsconfigPaths(),
     TanStackRouterVite({ target: "react", autoCodeSplitting: true }),
@@ -17,5 +15,9 @@ export default defineConfig({
   build: {
     outDir: "dist",
     emptyOutDir: true,
+    manifest: true,
+    rollupOptions: {
+      input: resolve(process.cwd(), "src/spa-entry.tsx"),
+    },
   },
 });
