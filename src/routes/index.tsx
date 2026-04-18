@@ -1,5 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState, useEffect } from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ReferenceLine,
+  ResponsiveContainer,
+} from "recharts";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,6 +25,7 @@ import {
 import { ChevronDown, RotateCcw } from "lucide-react";
 import { CITIES } from "@/lib/cities";
 import { simulate, fmtEUR, FRAIS_NOTAIRE_RATE, ASSURANCE_RATE } from "@/lib/simulation";
+import { FranceMap } from "@/components/FranceMap";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -103,6 +115,8 @@ function Index() {
               <CardTitle className="text-base">Choisir une ville</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              <FranceMap selected={cityName} onSelect={setCityName} />
+
               <div className="grid grid-cols-2 gap-2">
                 {CITIES.map((c) => (
                   <button
@@ -290,6 +304,78 @@ function Index() {
               hint={sim.seuilRentabilite ? "patrimoine net > coûts" : "non atteint sur 25 ans"}
             />
           </div>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base">Évolution sur 25 ans</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[380px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={sim.series} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.4} />
+                    <XAxis
+                      dataKey="annee"
+                      tick={{ fontSize: 12 }}
+                      label={{ value: "Années", position: "insideBottom", offset: -2, fontSize: 11 }}
+                    />
+                    <YAxis
+                      tick={{ fontSize: 11 }}
+                      tickFormatter={(v) => `${Math.round(v / 1000)} k€`}
+                    />
+                    <Tooltip
+                      formatter={(v: any) => fmtEUR(Number(v))}
+                      labelFormatter={(l) => `Année ${l}`}
+                      contentStyle={{
+                        background: "hsl(var(--card))",
+                        border: "1px solid hsl(var(--border))",
+                        borderRadius: 8,
+                        fontSize: 12,
+                      }}
+                    />
+                    <Legend wrapperStyle={{ fontSize: 12 }} />
+                    {sim.seuilRentabilite && (
+                      <ReferenceLine
+                        x={sim.seuilRentabilite}
+                        stroke="hsl(var(--primary))"
+                        strokeDasharray="4 4"
+                        label={{
+                          value: `Seuil rentabilité — Année ${sim.seuilRentabilite}`,
+                          position: "top",
+                          fontSize: 11,
+                          fill: "hsl(var(--primary))",
+                        }}
+                      />
+                    )}
+                    <Line
+                      type="monotone"
+                      dataKey="coutProprietaire"
+                      name="Cumul coûts propriétaire"
+                      stroke="#dc2626"
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="coutLocataire"
+                      name="Cumul loyers locataire"
+                      stroke="#f59e0b"
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="patrimoineNet"
+                      name="Patrimoine net"
+                      stroke="#2563eb"
+                      strokeWidth={2.5}
+                      dot={false}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
 
           <Collapsible>
             <Card>
