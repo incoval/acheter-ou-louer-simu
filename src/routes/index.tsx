@@ -25,7 +25,6 @@ import {
 import { ChevronDown, RotateCcw } from "lucide-react";
 import { CITIES } from "@/lib/cities";
 import { simulate, fmtEUR, FRAIS_NOTAIRE_RATE, ASSURANCE_RATE } from "@/lib/simulation";
-import { FranceMap } from "@/components/FranceMap";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -115,8 +114,6 @@ function Index() {
               <CardTitle className="text-base">Choisir une ville</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <FranceMap selected={cityName} onSelect={setCityName} />
-
               <div className="grid grid-cols-2 gap-2">
                 {CITIES.map((c) => (
                   <button
