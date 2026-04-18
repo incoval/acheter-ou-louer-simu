@@ -9,8 +9,14 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AcheterOuLouerSimuRouteImport } from './routes/acheter-ou-louer-simu'
 import { Route as IndexRouteImport } from './routes/index'
 
+const AcheterOuLouerSimuRoute = AcheterOuLouerSimuRouteImport.update({
+  id: '/acheter-ou-louer-simu',
+  path: '/acheter-ou-louer-simu',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +25,39 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/acheter-ou-louer-simu': typeof AcheterOuLouerSimuRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/acheter-ou-louer-simu': typeof AcheterOuLouerSimuRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/acheter-ou-louer-simu': typeof AcheterOuLouerSimuRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/acheter-ou-louer-simu'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/acheter-ou-louer-simu'
+  id: '__root__' | '/' | '/acheter-ou-louer-simu'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AcheterOuLouerSimuRoute: typeof AcheterOuLouerSimuRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/acheter-ou-louer-simu': {
+      id: '/acheter-ou-louer-simu'
+      path: '/acheter-ou-louer-simu'
+      fullPath: '/acheter-ou-louer-simu'
+      preLoaderRoute: typeof AcheterOuLouerSimuRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,7 +70,17 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AcheterOuLouerSimuRoute: AcheterOuLouerSimuRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
